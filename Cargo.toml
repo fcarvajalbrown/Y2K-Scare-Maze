@@ -1,0 +1,13 @@
+[package]
+name = "y2k-scare-maze"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = { version = "0.15"}
+bevy_egui = "0.31"
+bevy_rapier3d = { version = "0.28", features = ["simd-stable"] }
+rodio = { version = "0.19", default-features = false, features = ["wav"] }
+
+[profile.dev]
+opt-level = 1

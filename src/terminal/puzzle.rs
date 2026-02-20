@@ -1,7 +1,37 @@
 //! Terminal puzzle logic.
-//! Player must fix the Y2K bug by correcting a pseudocode snippet.
+//! Player fixes 3 typos in pseudocode one line at a time.
 
 use bevy::prelude::*;
+
+/// A single broken line the player must fix.
+#[derive(Debug, Clone)]
+pub struct PuzzleLine {
+    /// The broken line shown to the player.
+    pub broken: &'static str,
+    /// The correct answer the player must type.
+    pub correct: &'static str,
+    /// Hint shown after a failed attempt.
+    pub hint: &'static str,
+}
+
+/// All three buggy lines in order.
+pub const PUZZLE_LINES: [PuzzleLine; 3] = [
+    PuzzleLine {
+        broken:  "    stored_yeer = year % 100",
+        correct: "stored_year = year % 100",
+        hint:    "HINT: CHECK THE VARIABLE NAME",
+    },
+    PuzzleLine {
+        broken:  "        RETRUN stored_year",
+        correct: "RETURN stored_year",
+        hint:    "HINT: CHECK THE KEYWORD SPELLING",
+    },
+    PuzzleLine {
+        broken:  "    RETURN stored_year + 190",
+        correct: "RETURN stored_year + 1900",
+        hint:    "HINT: CHECK THE CONSTANT VALUE",
+    },
+];
 
 /// All possible puzzle states.
 #[derive(Debug, Clone, PartialEq)]
@@ -11,44 +41,45 @@ pub enum PuzzleState {
     Failed,
 }
 
-/// The terminal puzzle resource.
+/// The terminal puzzle resource tracking progress across all lines.
 #[derive(Resource, Debug)]
 pub struct TerminalPuzzle {
     pub state: PuzzleState,
+    pub current_line: usize,
     pub current_input: String,
-    pub attempts: u32,
+    pub attempts_on_line: u32,
     pub max_attempts: u32,
+    pub show_hint: bool,
 }
 
 impl Default for TerminalPuzzle {
-    /// Creates a new unsolved puzzle with 3 attempts.
+    /// Creates a new unsolved puzzle starting at line 1.
     fn default() -> Self {
         TerminalPuzzle {
             state: PuzzleState::Unsolved,
+            current_line: 0,
             current_input: String::new(),
-            attempts: 0,
+            attempts_on_line: 0,
             max_attempts: 3,
+            show_hint: false,
         }
     }
 }
 
-/// The pseudocode prompt shown to the player on the terminal.
-pub const PUZZLE_PROMPT: &str = r#"
-PATCH FILE: y2k_fix.pseudo
------------------------------------------
-FUNCTION get_full_year(year):
-    stored_yeer = year % 100
-    if stored_year > 99:
-        RETRUN stored_year
-    RETURN stored_year + 190
------------------------------------------
-FIX ALL ERRORS. TYPE CORRECTED LINE (1/2/3):
-"#;
+/// The full pseudocode block shown as context.
+pub const PUZZLE_PROMPT: &str = "\
+PATCH FILE: y2k_fix.pseudo\n\
+-----------------------------------------\n\
+FUNCTION get_full_year(year):\n\
+    stored_yeer = year % 100\n\
+        RETRUN stored_year\n\
+    RETURN stored_year + 190\n\
+-----------------------------------------\n";
 
-/// Checks the player's input against the correct answer.
-pub fn check_answer(input: &str) -> PuzzleState {
-    match input.trim().to_uppercase().as_str() {
-        "B" => PuzzleState::Solved,
-        _   => PuzzleState::Failed,
-    }
+/// Checks the player input against the current line's correct answer.
+/// Returns true if correct.
+pub fn check_answer(input: &str, line_index: usize) -> bool {
+    let normalized_input = input.trim().to_lowercase();
+    let normalized_correct = PUZZLE_LINES[line_index].correct.trim().to_lowercase();
+    normalized_input == normalized_correct
 }

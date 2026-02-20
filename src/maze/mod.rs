@@ -1,2 +1,3 @@
-//! Maze module — generation and spatial data.
+//! Maze module — generation, spatial data, and rendering.
 pub mod generator;
+pub mod renderer;

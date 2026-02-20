@@ -3,6 +3,8 @@
 
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
+use maze::renderer::spawn_maze;
+use maze::generator::Maze;
 
 mod states;
 mod maze;
@@ -45,7 +47,8 @@ fn main() {
         .add_event::<DamageEvent>()
         .add_event::<DeathEvent>()
         // Startup systems
-        .add_systems(Startup, (spawn_player, lock_cursor))
+        .insert_resource(Maze::generate(12345))
+        .add_systems(Startup, (spawn_player, lock_cursor, spawn_maze))
         // Exploring state systems
         .add_systems(Update, (
             player_look,

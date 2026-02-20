@@ -56,7 +56,7 @@ pub fn handle_death(
 /// Phase 2: add raycasting for hit detection.
 pub fn resolve_attack(
     mut attack_events: EventReader<AttackEvent>,
-    mut damage_events: EventWriter<DamageEvent>,
+    _damage_events: EventWriter<DamageEvent>,
 ) {
     for _event in attack_events.read() {
         // Phase 2: raycast from player, find hit enemy, send DamageEvent

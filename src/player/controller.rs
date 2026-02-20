@@ -2,6 +2,7 @@
 //! Handles WASD movement, mouse look, and cursor locking.
 
 use bevy::prelude::*;
+use bevy_rapier3d::prelude::*;
 use bevy::input::mouse::MouseMotion;
 
 /// Marker component for the player entity.
@@ -32,6 +33,10 @@ pub fn spawn_player(mut commands: Commands) {
         PlayerLook { yaw: 0.0, pitch: 0.0 },
         Camera3d::default(),
         Transform::from_xyz(1.0, 0.5, 1.0),
+        RigidBody::Dynamic,
+        Collider::capsule_y(0.4, 0.3),
+        LockedAxes::ROTATION_LOCKED,
+        Velocity::zero(),
     ));
 }
 

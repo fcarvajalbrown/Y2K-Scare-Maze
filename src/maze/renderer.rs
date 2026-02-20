@@ -3,6 +3,7 @@
 //! Wireframe overlay is stubbed for future use.
 
 use bevy::prelude::*;
+use bevy_rapier3d::prelude::*;
 use crate::maze::generator::{Maze, MAZE_WIDTH, MAZE_HEIGHT, NORTH, EAST};
 
 /// Wall dimensions in world units.
@@ -53,6 +54,12 @@ pub fn spawn_maze(
             -0.05,
             MAZE_HEIGHT as f32 * CELL_SIZE / 2.0,
         ),
+        Collider::cuboid(
+            MAZE_WIDTH as f32 * CELL_SIZE / 2.0,
+            0.05,
+            MAZE_HEIGHT as f32 * CELL_SIZE / 2.0,
+        ),
+        RigidBody::Fixed,
     ));
 
     // Spawn walls
@@ -69,7 +76,9 @@ pub fn spawn_maze(
                     Mesh3d(meshes.add(Cuboid::new(CELL_SIZE, WALL_HEIGHT, WALL_THICKNESS))),
                     MeshMaterial3d(wall_material.clone()),
                     Transform::from_xyz(wx + CELL_SIZE / 2.0, WALL_HEIGHT / 2.0, wz),
-                ));
+                    Collider::cuboid(CELL_SIZE / 2.0, WALL_HEIGHT / 2.0, WALL_THICKNESS / 2.0),
+                    RigidBody::Fixed,
+                    ));
             }
 
             // East wall
@@ -79,6 +88,8 @@ pub fn spawn_maze(
                     Mesh3d(meshes.add(Cuboid::new(WALL_THICKNESS, WALL_HEIGHT, CELL_SIZE))),
                     MeshMaterial3d(wall_material.clone()),
                     Transform::from_xyz(wx + CELL_SIZE, WALL_HEIGHT / 2.0, wz + CELL_SIZE / 2.0),
+                    Collider::cuboid(WALL_THICKNESS / 2.0, WALL_HEIGHT / 2.0, CELL_SIZE / 2.0),
+                    RigidBody::Fixed,
                 ));
             }
         }

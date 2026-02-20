@@ -16,8 +16,8 @@ pub const INTERACT_RANGE: f32 = 2.0;
 /// Future: randomize position across valid maze cells.
 pub fn spawn_terminal(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    _meshes: ResMut<Assets<Mesh>>,
+    _materials: ResMut<Assets<StandardMaterial>>,
 ) {
     commands.spawn((
         Terminal,

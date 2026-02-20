@@ -31,7 +31,7 @@ use terminal::spawner::{spawn_terminal, interact_terminal};
 use ui::game_over::{render_game_over, render_win};
 use audio::clock::{start_clock_audio, stop_clock_audio};
 use terminal::monitor::spawn_monitor;
-use game_timer::{GameTimer, tick_timer};
+use game_timer::tick_timer;
 
 fn main() {
     App::new()

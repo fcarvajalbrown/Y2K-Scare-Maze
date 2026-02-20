@@ -24,4 +24,22 @@ pub fn render_hud(
             ui.label(egui::RichText::new("STAMINA").monospace().size(14.0));
             ui.add(egui::ProgressBar::new(1.0).fill(egui::Color32::from_rgb(50, 50, 255)));
         });
+    // Crosshair
+    egui::Area::new("crosshair".into())
+        .fixed_pos(egui::pos2(
+            ctx.screen_rect().center().x - 2.0,
+            ctx.screen_rect().center().y - 2.0,
+        ))
+        .show(ctx, |ui| {
+            let (rect, _) = ui.allocate_exact_size(
+                egui::vec2(4.0, 4.0),
+                egui::Sense::hover(),
+            );
+            ui.painter().circle_filled(
+                rect.center(),
+                2.0,
+                egui::Color32::from_rgba_unmultiplied(255, 255, 255, 180),
+            );
+        });
 }
+

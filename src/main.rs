@@ -15,6 +15,7 @@ mod terminal;
 mod combat;
 mod ui;
 mod audio;
+mod game_timer;
 
 // Imports from modules
 use states::GameState;
@@ -30,6 +31,7 @@ use terminal::spawner::{spawn_terminal, interact_terminal};
 use ui::game_over::{render_game_over, render_win};
 use audio::clock::{start_clock_audio, stop_clock_audio};
 use terminal::monitor::spawn_monitor;
+use game_timer::{GameTimer, tick_timer};
 
 fn main() {
     App::new()
@@ -63,6 +65,7 @@ fn main() {
             tick_attack_cooldown,
             render_hud,
             interact_terminal,
+            tick_timer,
         ).run_if(in_state(GameState::Exploring)))
         // AtTerminal state systems
         .add_systems(Update, (
@@ -94,7 +97,7 @@ fn main() {
             stop_clock_audio
         )
         .add_systems(OnEnter(GameState::GameOver), 
-        stop_clock_audio
+            stop_clock_audio
         )
         .run();
 }

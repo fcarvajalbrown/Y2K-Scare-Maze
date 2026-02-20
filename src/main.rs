@@ -36,7 +36,8 @@ fn main() {
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "Y2K Scare Maze".into(),
-                mode: bevy::window::WindowMode::BorderlessFullscreen(bevy::window::MonitorSelection::Current),
+                mode: bevy::window::WindowMode::BorderlessFullscreen(
+                    bevy::window::MonitorSelection::Primary),
                 ..default()
             }),
             ..default()
@@ -55,7 +56,6 @@ fn main() {
         .add_event::<DeathEvent>()
         // Startup systems
         .insert_resource(Maze::generate(12345))
-        .add_systems(Startup, (spawn_player, lock_cursor, spawn_maze, spawn_terminal, start_clock_audio))        // Exploring state systems
         .add_systems(Update, (
             player_look,
             player_move,
@@ -89,9 +89,6 @@ fn main() {
         // Win Render Screen
         .add_systems(Update,
             render_win.run_if(in_state(GameState::Win))
-        )
-        .add_systems(OnEnter(GameState::Exploring), 
-            reset_game
         )
         .add_systems(OnEnter(GameState::Win), 
             stop_clock_audio

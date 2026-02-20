@@ -12,8 +12,10 @@ pub fn spawn_monitor(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    let base_x = CELL_SIZE * 18.0;
-    let base_z = CELL_SIZE * 18.0;
+    let base_x = CELL_SIZE * 19.5;
+    let base_z = CELL_SIZE * 19.5;
+
+    let base_y_offset = -0.5;
 
     let casing_color = materials.add(StandardMaterial {
         base_color: Color::srgb(0.15, 0.15, 0.12), // dirty beige/grey

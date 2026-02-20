@@ -21,7 +21,7 @@ pub fn spawn_terminal(
 ) {
     commands.spawn((
         Terminal,
-        Transform::from_xyz(CELL_SIZE * 18.0, 0.5, CELL_SIZE * 18.0),
+        Transform::from_xyz(CELL_SIZE * 19.5, 0.5, CELL_SIZE * 19.5),
         Collider::cuboid(0.3, 0.5, 0.2),
         RigidBody::Fixed,
     ));

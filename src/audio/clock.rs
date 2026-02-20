@@ -100,7 +100,7 @@ pub fn start_clock_audio(mut commands: Commands) {
 /// Queues a repeating tick pattern into the sink.
 fn loop_tick(sink: &Sink) {
     let sample_rate = 44100u32;
-    let gap_samples = sample_rate as usize; // 1 second gap between ticks
+    let _gap_samples = sample_rate as usize; // 1 second gap between ticks
 
     for _ in 0..120 { // pre-queue 2 minutes of ticks
         sink.append(TickSource::new());

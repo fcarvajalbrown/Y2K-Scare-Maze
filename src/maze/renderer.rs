@@ -78,7 +78,7 @@ pub fn spawn_maze(
                     Transform::from_xyz(wx + CELL_SIZE / 2.0, WALL_HEIGHT / 2.0, wz),
                     Collider::cuboid(CELL_SIZE / 2.0, WALL_HEIGHT / 2.0, WALL_THICKNESS / 2.0),
                     RigidBody::Fixed,
-                    ));
+                ));
             }
 
             // East wall
@@ -92,7 +92,33 @@ pub fn spawn_maze(
                     RigidBody::Fixed,
                 ));
             }
-        }
+        } // <-- cell loop ends here, border loops go BELOW
+    }
+
+    // South border walls
+    for x in 0..MAZE_WIDTH {
+        let wx = x as f32 * CELL_SIZE;
+        commands.spawn((
+            MazeWall,
+            Mesh3d(meshes.add(Cuboid::new(CELL_SIZE, WALL_HEIGHT, WALL_THICKNESS))),
+            MeshMaterial3d(wall_material.clone()),
+            Transform::from_xyz(wx + CELL_SIZE / 2.0, WALL_HEIGHT / 2.0, MAZE_HEIGHT as f32 * CELL_SIZE),
+            Collider::cuboid(CELL_SIZE / 2.0, WALL_HEIGHT / 2.0, WALL_THICKNESS / 2.0),
+            RigidBody::Fixed,
+        ));
+    }
+
+    // West border walls
+    for y in 0..MAZE_HEIGHT {
+        let wz = y as f32 * CELL_SIZE;
+        commands.spawn((
+            MazeWall,
+            Mesh3d(meshes.add(Cuboid::new(WALL_THICKNESS, WALL_HEIGHT, CELL_SIZE))),
+            MeshMaterial3d(wall_material.clone()),
+            Transform::from_xyz(0.0, WALL_HEIGHT / 2.0, wz + CELL_SIZE / 2.0),
+            Collider::cuboid(WALL_THICKNESS / 2.0, WALL_HEIGHT / 2.0, CELL_SIZE / 2.0),
+            RigidBody::Fixed,
+        ));
     }
 
     // Spawn ambient light

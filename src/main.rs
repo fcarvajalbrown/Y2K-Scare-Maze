@@ -27,8 +27,9 @@ use combat::events::{AttackEvent, DamageEvent, DeathEvent};
 use combat::system::{resolve_damage, resolve_attack, handle_death};
 use ui::hud::render_hud;
 use terminal::spawner::{spawn_terminal, interact_terminal};
-use audio::clock::start_clock_audio;
 use ui::game_over::{render_game_over, render_win};
+use audio::clock::{start_clock_audio, stop_clock_audio};
+use terminal::monitor::spawn_monitor;
 
 fn main() {
     App::new()
@@ -74,6 +75,13 @@ fn main() {
             resolve_attack,
             handle_death,
         ).run_if(in_state(GameState::Combat)))
+        .add_systems(Startup, (
+            spawn_player, 
+            lock_cursor, 
+            spawn_maze, 
+            spawn_terminal, 
+            spawn_monitor, 
+            start_clock_audio))
         // GameOver state systems
         .add_systems(Update,
             render_game_over.run_if(in_state(GameState::GameOver))
@@ -84,6 +92,12 @@ fn main() {
         )
         .add_systems(OnEnter(GameState::Exploring), 
             reset_game
+        )
+        .add_systems(OnEnter(GameState::Win), 
+            stop_clock_audio
+        )
+        .add_systems(OnEnter(GameState::GameOver), 
+        stop_clock_audio
         )
         .run();
 }

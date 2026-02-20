@@ -2,3 +2,4 @@
 pub mod puzzle;
 pub mod ui;
 pub mod spawner;
+pub mod monitor;

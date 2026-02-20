@@ -21,12 +21,6 @@ pub fn spawn_terminal(
 ) {
     commands.spawn((
         Terminal,
-        Mesh3d(meshes.add(Cuboid::new(0.6, 1.0, 0.4))),
-        MeshMaterial3d(materials.add(StandardMaterial {
-            base_color: Color::srgb(0.0, 0.8, 0.2),
-            emissive: LinearRgba::new(0.0, 2.0, 0.5, 1.0),
-            ..default()
-        })),
         Transform::from_xyz(CELL_SIZE * 18.0, 0.5, CELL_SIZE * 18.0),
         Collider::cuboid(0.3, 0.5, 0.2),
         RigidBody::Fixed,

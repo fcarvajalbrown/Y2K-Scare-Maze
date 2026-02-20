@@ -7,7 +7,6 @@ edition = "2021"
 bevy = { version = "0.15"}
 bevy_egui = "0.31"
 bevy_rapier3d = { version = "0.28", features = ["simd-stable"] }
-rodio = { version = "0.19", default-features = false, features = ["wav"] }
 
 [profile.dev]
 opt-level = 1

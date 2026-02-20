@@ -33,3 +33,8 @@ pub fn tick_timer(
         next_state.set(GameState::GameOver);
     }
 }
+
+/// Resets the timer when returning to Exploring state.
+pub fn reset_timer(mut timer: ResMut<GameTimer>) {
+    timer.remaining = timer.total;
+}

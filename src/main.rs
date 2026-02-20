@@ -6,6 +6,7 @@ use bevy_egui::EguiPlugin;
 use bevy_rapier3d::prelude::*;
 use maze::renderer::spawn_maze;
 use maze::generator::Maze;
+use bevy_egui::egui;
 
 mod states;
 mod maze;
@@ -31,7 +32,7 @@ use terminal::spawner::{spawn_terminal, interact_terminal};
 use ui::game_over::{render_game_over, render_win};
 use audio::clock::{start_clock_audio, stop_clock_audio};
 use terminal::monitor::spawn_monitor;
-use game_timer::tick_timer;
+use game_timer::{GameTimer, tick_timer, reset_timer};
 
 fn main() {
     App::new()
@@ -52,6 +53,7 @@ fn main() {
         .init_resource::<TerminalPuzzle>()
         .init_resource::<TerminalStyle>()
         .init_resource::<TypewriterState>()
+        .init_resource::<GameTimer>()
         // Events
         .add_event::<AttackEvent>()
         .add_event::<DamageEvent>()
@@ -84,7 +86,8 @@ fn main() {
             spawn_maze, 
             spawn_terminal, 
             spawn_monitor, 
-            start_clock_audio))
+            start_clock_audio,
+            load_fonts))
         // GameOver state systems
         .add_systems(Update,
             render_game_over.run_if(in_state(GameState::GameOver))
@@ -99,6 +102,9 @@ fn main() {
         .add_systems(OnEnter(GameState::GameOver), 
             stop_clock_audio
         )
+        .add_systems(OnEnter(GameState::Exploring), 
+        reset_timer
+    )
         .run();
 }
 
@@ -113,4 +119,18 @@ fn reset_game(
     }
     *puzzle = terminal::puzzle::TerminalPuzzle::default();
     tw.reset();
+}
+
+fn load_fonts(mut contexts: bevy_egui::EguiContexts) {
+    let ctx = contexts.ctx_mut();
+    let mut fonts = egui::FontDefinitions::default();
+    fonts.font_data.insert(
+        "ds_digital".to_owned(),
+        egui::FontData::from_static(include_bytes!("../assets/fonts/ds_digital.ttf")),
+    );
+    fonts.families
+        .entry(egui::FontFamily::Monospace)
+        .or_default()
+        .insert(0, "ds_digital".to_owned());
+    ctx.set_fonts(fonts);
 }

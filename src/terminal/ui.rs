@@ -139,7 +139,8 @@ pub fn render_terminal(
                         ui.add_space(6.0);
                         ui.horizontal(|ui| {
                             ui.label(egui::RichText::new("> ").monospace().size(16.0));
-                            ui.text_edit_singleline(&mut puzzle.current_input);
+                            let response = ui.text_edit_singleline(&mut puzzle.current_input);
+                            response.request_focus();
                         });
 
                         if keys.just_pressed(KeyCode::Enter) {

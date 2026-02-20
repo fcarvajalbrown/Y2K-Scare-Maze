@@ -14,6 +14,7 @@ mod enemies;
 mod terminal;
 mod combat;
 mod ui;
+mod audio;
 
 use states::GameState;
 use player::controller::{spawn_player, lock_cursor, player_look, player_move};
@@ -26,6 +27,7 @@ use combat::system::{resolve_damage, resolve_attack, handle_death};
 use ui::hud::render_hud;
 use ui::game_over::render_game_over;
 use terminal::spawner::{spawn_terminal, interact_terminal};
+use audio::clock::start_clock_audio;
 
 fn main() {
     App::new()
@@ -51,8 +53,7 @@ fn main() {
         .add_event::<DeathEvent>()
         // Startup systems
         .insert_resource(Maze::generate(12345))
-        .add_systems(Startup, (spawn_player, lock_cursor, spawn_maze, spawn_terminal))
-        // Exploring state systems
+        .add_systems(Startup, (spawn_player, lock_cursor, spawn_maze, spawn_terminal, start_clock_audio))        // Exploring state systems
         .add_systems(Update, (
             player_look,
             player_move,

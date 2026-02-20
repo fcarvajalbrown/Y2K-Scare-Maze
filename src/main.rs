@@ -25,6 +25,7 @@ use combat::events::{AttackEvent, DamageEvent, DeathEvent};
 use combat::system::{resolve_damage, resolve_attack, handle_death};
 use ui::hud::render_hud;
 use ui::game_over::render_game_over;
+use terminal::spawner::{spawn_terminal, interact_terminal};
 
 fn main() {
     App::new()
@@ -50,7 +51,7 @@ fn main() {
         .add_event::<DeathEvent>()
         // Startup systems
         .insert_resource(Maze::generate(12345))
-        .add_systems(Startup, (spawn_player, lock_cursor, spawn_maze))
+        .add_systems(Startup, (spawn_player, lock_cursor, spawn_maze, spawn_terminal))
         // Exploring state systems
         .add_systems(Update, (
             player_look,
@@ -58,6 +59,7 @@ fn main() {
             regenerate_stamina,
             tick_attack_cooldown,
             render_hud,
+            interact_terminal,
         ).run_if(in_state(GameState::Exploring)))
         // AtTerminal state systems
         .add_systems(Update, (

@@ -44,4 +44,12 @@ pub fn interact_terminal(
     let Ok(player_transform) = player_query.get_single() else { return; };
 
     for terminal_transform in terminal_query.iter() {
-        let distance = player_transform.translat
+        let distance = player_transform.translation
+            .distance(terminal_transform.translation);
+
+        if distance <= INTERACT_RANGE && keys.just_pressed(KeyCode::KeyE) {
+            tw.reset();
+            next_state.set(crate::states::GameState::AtTerminal);
+        }
+    }
+}

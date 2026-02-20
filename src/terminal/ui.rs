@@ -4,10 +4,9 @@
 
 use bevy::prelude::*;
 use bevy_egui::{egui, EguiContexts};
-use crate::terminal::puzzle::{TerminalPuzzle, PuzzleState, PUZZLE_PROMPT, check_answer};
+use crate::terminal::puzzle::{TerminalPuzzle, PuzzleState, PUZZLE_PROMPT, PUZZLE_LINES, check_answer};
 
 /// Controls terminal visual style.
-/// crt_enabled is a stub for future CRT shader integration.
 #[derive(Resource)]
 pub struct TerminalStyle {
     pub crt_enabled: bool,
@@ -82,12 +81,8 @@ pub fn tick_typewriter(
 
     tw.chars_revealed = chars_to_show.min(current_text.len());
 
-    if tw.chars_revealed >= current_text.len() {
-        if tw.phase == TypewriterPhase::Warning {
-            // Wait for Enter before moving to puzzle phase
-        } else {
-            tw.phase = TypewriterPhase::Done;
-        }
+    if tw.chars_revealed >= current_text.len() && tw.phase == TypewriterPhase::Puzzle {
+        tw.phase = TypewriterPhase::Done;
     }
 }
 
@@ -126,34 +121,59 @@ pub fn render_terminal(
                     let visible = &PUZZLE_PROMPT[..visible_len];
                     ui.label(egui::RichText::new(visible).monospace().size(16.0));
 
-                    if tw.phase == TypewriterPhase::Done {
+                    if tw.phase == TypewriterPhase::Done
+                        && puzzle.state == PuzzleState::Unsolved
+                    {
+                        // Show current broken line
+                        let line = &PUZZLE_LINES[puzzle.current_line];
+                        ui.add_space(10.0);
+                        ui.label(egui::RichText::new(
+                            format!("ERROR LINE {}: {}", puzzle.current_line + 1, line.broken)
+                        ).monospace().size(16.0).color(egui::Color32::from_rgb(255, 80, 80)));
+
+                        if puzzle.show_hint {
+                            ui.label(egui::RichText::new(line.hint).monospace().size(14.0)
+                                .color(egui::Color32::from_rgb(255, 200, 0)));
+                        }
+
+                        ui.add_space(6.0);
                         ui.horizontal(|ui| {
                             ui.label(egui::RichText::new("> ").monospace().size(16.0));
                             ui.text_edit_singleline(&mut puzzle.current_input);
                         });
 
                         if keys.just_pressed(KeyCode::Enter) {
-                            let result = check_answer(&puzzle.current_input);
-                            puzzle.attempts += 1;
-                            match result {
-                                PuzzleState::Solved => {
+                            if check_answer(&puzzle.current_input, puzzle.current_line) {
+                                puzzle.current_line += 1;
+                                puzzle.current_input.clear();
+                                puzzle.attempts_on_line = 0;
+                                puzzle.show_hint = false;
+
+                                if puzzle.current_line >= PUZZLE_LINES.len() {
                                     puzzle.state = PuzzleState::Solved;
                                     next_state.set(crate::states::GameState::Win);
                                 }
-                                _ => {
-                                    if puzzle.attempts >= puzzle.max_attempts {
-                                        puzzle.state = PuzzleState::Failed;
-                                    } else {
-                                        puzzle.current_input.clear();
-                                    }
+                            } else {
+                                puzzle.attempts_on_line += 1;
+                                puzzle.current_input.clear();
+                                if puzzle.attempts_on_line >= 1 {
+                                    puzzle.show_hint = true;
+                                }
+                                if puzzle.attempts_on_line >= puzzle.max_attempts {
+                                    puzzle.state = PuzzleState::Failed;
                                 }
                             }
                         }
                     }
+
+                    if puzzle.state == PuzzleState::Failed {
+                        ui.label(egui::RichText::new(
+                            "SYSTEM FAILURE — TOO MANY ERRORS"
+                        ).monospace().size(20.0).color(egui::Color32::from_rgb(255, 50, 50)));
+                    }
                 }
             }
 
-            // Escape exits terminal
             if keys.just_pressed(KeyCode::Escape) {
                 next_state.set(crate::states::GameState::Exploring);
             }

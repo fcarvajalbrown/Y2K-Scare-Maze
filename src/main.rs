@@ -3,6 +3,7 @@
 
 use bevy::prelude::*;
 use bevy_egui::EguiPlugin;
+use bevy_rapier3d::prelude::*;
 use maze::renderer::spawn_maze;
 use maze::generator::Maze;
 
@@ -36,6 +37,7 @@ fn main() {
             ..default()
         }))
         .add_plugins(EguiPlugin)
+        .add_plugins(RapierPhysicsPlugin::<NoUserData>::default())
         .init_state::<GameState>()
         // Resources
         .init_resource::<player::controller::MouseSensitivity>()

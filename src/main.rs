@@ -16,6 +16,7 @@ mod combat;
 mod ui;
 mod audio;
 
+// Imports from modules
 use states::GameState;
 use player::controller::{spawn_player, lock_cursor, player_look, player_move};
 use player::stats::regenerate_stamina;
@@ -25,9 +26,9 @@ use terminal::puzzle::TerminalPuzzle;
 use combat::events::{AttackEvent, DamageEvent, DeathEvent};
 use combat::system::{resolve_damage, resolve_attack, handle_death};
 use ui::hud::render_hud;
-use ui::game_over::render_game_over;
 use terminal::spawner::{spawn_terminal, interact_terminal};
 use audio::clock::start_clock_audio;
+use ui::game_over::{render_game_over, render_win};
 
 fn main() {
     App::new()
@@ -77,5 +78,25 @@ fn main() {
         .add_systems(Update,
             render_game_over.run_if(in_state(GameState::GameOver))
         )
+        // Win Render Screen
+        .add_systems(Update,
+            render_win.run_if(in_state(GameState::Win))
+        )
+        .add_systems(OnEnter(GameState::Exploring), 
+            reset_game
+        )
         .run();
+}
+
+// Resets the game state to the initial conditions for a new playthrough.
+fn reset_game(
+    mut player_query: Query<&mut Transform, With<player::controller::Player>>,
+    mut puzzle: ResMut<terminal::puzzle::TerminalPuzzle>,
+    mut tw: ResMut<terminal::ui::TypewriterState>,
+) {
+    if let Ok(mut transform) = player_query.get_single_mut() {
+        transform.translation = Vec3::new(1.0, 0.5, 1.0);
+    }
+    *puzzle = terminal::puzzle::TerminalPuzzle::default();
+    tw.reset();
 }
